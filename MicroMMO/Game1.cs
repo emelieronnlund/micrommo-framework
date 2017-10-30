@@ -12,6 +12,8 @@ namespace MicroMMO
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Tilemap Map;
+        GUI gui;
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -28,6 +30,15 @@ namespace MicroMMO
         {
             // TODO: Add your initialization logic here
 
+            IsMouseVisible = true;
+            Window.AllowUserResizing = true;
+
+            Map = new Tilemap(this);
+            Components.Add(Map);
+
+            gui = new GUI(this);
+            Components.Add(gui);
+
             base.Initialize();
         }
 
@@ -40,6 +51,7 @@ namespace MicroMMO
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            //Map = new Tilemap(TileAtlas);
             // TODO: use this.Content to load your game content here
         }
 
@@ -73,7 +85,7 @@ namespace MicroMMO
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DimGray);
 
             // TODO: Add your drawing code here
 

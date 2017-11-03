@@ -34,7 +34,7 @@ namespace MicroMMO
         {
             base.LoadContent();
 
-            TileAtlas = Game.Content.Load<Texture2D>("Tile");
+            TileAtlas = Game.Content.Load<Texture2D>("monotiles");
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
         }
 
@@ -199,26 +199,6 @@ namespace MicroMMO
 
             return result;
         }
-
-        //int? ScreenToTileIndex(Vector2 screenCoordinates)
-        //{
-        //    Vector2 normalizedCoordinates = screenCoordinates - CameraOffset - new Vector2(0.5f, 0.5f);
-        //    Vector2 sizeOfMap = new Vector2(CellWidth * GridWidth, CellHeight * GridHeight);
-
-        //    if (normalizedCoordinates.X < 0f || normalizedCoordinates.Y < 0f
-        //        || normalizedCoordinates.X > sizeOfMap.X || normalizedCoordinates.Y > sizeOfMap.Y)
-        //    {
-        //        return null;
-        //    }
-
-        //    Point tileCoordinates;
-        //    tileCoordinates.X = (int)normalizedCoordinates.X / CellWidth;
-        //    tileCoordinates.Y = (int)normalizedCoordinates.Y / CellHeight;
-
-        //    int tileIndex = tileCoordinates.Y * GridWidth + tileCoordinates.X;
-
-        //    return tileIndex;
-        //}
 
         int? ScreenToTileIndex(Point screenCoordinates)
         {

@@ -34,8 +34,10 @@ namespace MicroMMO
             base.LoadContent();
 
             spriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
-            debugTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
-            debugTexture.SetData<Color>(new Color[] { Color.White });
+            //debugTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
+            //debugTexture.SetData<Color>(new Color[] { Color.White });
+
+            debugTexture = Debug.CreateDebugTexture(graphics: GraphicsDevice, color: Color.White);
         }
 
         void HandleMouseOver(Point pos, MouseState mouse)

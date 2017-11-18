@@ -13,7 +13,10 @@ namespace MicroMMO
         SpriteBatch spriteBatch;
 
         Tilemap Map;
+        //Tilemap map2;
         GUI gui;
+        Camera camera;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -32,14 +35,48 @@ namespace MicroMMO
 
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
-
+            Window.ClientSizeChanged += Window_ClientSizeChanged;
             Map = new Tilemap(this);
-            Components.Add(Map);
+            //Components.Add(Map);
 
             gui = new GUI(this);
             Components.Add(gui);
 
+            Vector2 mapSize = Map.SizeInPixels.ToVector2();
+
+            //map2 = new Tilemap(this);
+            //map2.CameraOffset += new Vector2(mapSize.X, 0.0f);
+            //Components.Add(map2);
+
+
+            camera = new Camera(this);
+
+            Components.Add(camera);
+
+
+
+            TilemapManager mapManager = new TilemapManager(this, camera);
+            //mapManager.AddMapChunk(new Point(0, 0), Map);
+            //mapManager.AddMapChunk(new Point(1, 0), map2);
+
+            Components.Add(mapManager);
+            mapManager.GenerateMapChunks(20, 20);
+
+
+            Components.Add(new FPS_Counter(this));
             base.Initialize();
+        }
+
+        private bool WindowSizeIsBeingChanged = false;
+        private void Window_ClientSizeChanged(object sender, System.EventArgs e)
+        {
+            WindowSizeIsBeingChanged = !WindowSizeIsBeingChanged;
+            if (WindowSizeIsBeingChanged)
+            {
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+                graphics.ApplyChanges();
+            }
         }
 
         /// <summary>

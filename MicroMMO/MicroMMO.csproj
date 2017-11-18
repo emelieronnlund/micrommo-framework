@@ -54,6 +54,7 @@
     <Compile Include="Tilemap.cs" />
     <Compile Include="TilemapManager.cs" />
     <Compile Include="TilemapRenderer.cs" />
+    <Compile Include="TilemapRendererDimetric.cs" />
     <Compile Include="TileStore.cs" />
   </ItemGroup>
   <ItemGroup>

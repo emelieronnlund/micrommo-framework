@@ -37,10 +37,12 @@ namespace MicroMMO
             LoadedMapChunks.Add(map);
         }
 
-        public TilemapManager(Game game, Camera cam) : base(game)
+        InputManager inputManager;
+        public TilemapManager(Game game, Camera cam, InputManager input) : base(game)
         {
             LoadedMapChunks = new List<Tilemap>();
             camera = cam;
+            inputManager = input;
         }
 
         public override void Initialize()
@@ -53,6 +55,37 @@ namespace MicroMMO
             }
 
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
+
+            inputManager.KeyDown += InputManager_KeyDown;
+            inputManager.KeyUp += InputManager_KeyUp;
+            inputManager.MouseButtonDown += InputManager_MouseButtonDown;
+            inputManager.MouseButtonUp += InputManager_MouseButtonUp;
+            inputManager.MouseMotion += InputManager_MouseMotion;
+        }
+
+        private void InputManager_MouseMotion(object sender, MouseEventArgs e)
+        {
+            //Console.WriteLine("MouseMotion: {0}", e.Position);
+        }
+
+        private void InputManager_MouseButtonUp(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("MouseButtonUp {0} at {1}", e.Button.ToString(), e.Position);
+        }
+
+        private void InputManager_MouseButtonDown(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("MouseButtonDown {0} at {1}", e.Button.ToString(), e.Position);
+        }
+
+        private void InputManager_KeyUp(object sender, KeyboardEventArgs e)
+        {
+            Console.WriteLine("Key up: {0}", e.Key);
+        }
+
+        private void InputManager_KeyDown(object sender, KeyboardEventArgs e)
+        {
+            Console.WriteLine("Key down: {0}", e.Key);
         }
 
         protected override void LoadContent()
@@ -89,7 +122,7 @@ namespace MicroMMO
         {
             base.Draw(gameTime);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(sortMode: SpriteSortMode.Deferred, blendState: null, samplerState: SamplerState.PointClamp);
             
             foreach(var map in MapsToDraw)
             {

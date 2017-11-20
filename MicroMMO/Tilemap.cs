@@ -99,7 +99,6 @@ namespace MicroMMO
                     CameraOffset.Y = mouse.Position.Y - oldCameraOffset.Y;
                 }
 
-
                 if (keyb.IsKeyDown(Keys.R))
                 {
                     Randomize();

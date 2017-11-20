@@ -50,20 +50,20 @@ namespace MicroMMO
 
 
             camera = new Camera(this);
-
             Components.Add(camera);
 
+            InputManager inputManager = new InputManager(this);
+            Components.Add(inputManager);
 
-
-            TilemapManager mapManager = new TilemapManager(this, camera);
+            TilemapManager mapManager = new TilemapManager(this, camera, inputManager);
             //mapManager.AddMapChunk(new Point(0, 0), Map);
             //mapManager.AddMapChunk(new Point(1, 0), map2);
 
             Components.Add(mapManager);
-            mapManager.GenerateMapChunks(20, 20);
-
+            mapManager.GenerateMapChunks(40, 40);
 
             Components.Add(new FPS_Counter(this));
+
             base.Initialize();
         }
 

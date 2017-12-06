@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 
 namespace MicroMMO
 {
-    partial class GUI : DrawableGameComponent
+    partial class GUIManager : DrawableGameComponent
     {
         class HelloWorldButton : Button
         {

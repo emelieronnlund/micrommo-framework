@@ -9,34 +9,74 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MicroMMO
 {
-    partial class GUI : DrawableGameComponent
+    partial class GUIManager : DrawableGameComponent
     {
 
         List<Button> buttons;
         SpriteBatch spriteBatch;
         Texture2D debugTexture;
-
-        public GUI(Game game) : base(game)
+        InputManager input;
+        public GUIManager(Game game, InputManager inputManager) : base(game)
         {
             buttons = new List<Button>();
+            input = inputManager;
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            input.MouseButtonUp += Input_MouseButtonUp;
+            input.MouseMotion += Input_MouseMotion;
             HelloWorldButton hButton = new HelloWorldButton() {
                 Box = new Rectangle(50,50,200,200)
             };
             buttons.Add(hButton);
         }
+
+        private void Input_MouseMotion(object sender, MouseEventArgs e)
+        {
+            foreach(var button in buttons)
+            {
+                if(button.Box.Contains(e.Position))
+                {
+                    if(button.MouseOver == false)
+                    {
+                        button.MouseOver = true;
+                        button.OnMouseEnter();
+                    }
+
+                }
+                else
+                {
+                    if(button.MouseOver == true)
+                    {
+                        button.MouseOver = false;
+                        button.OnMouseExit();
+                    }
+                }
+            }
+        }
+
+        private void Input_MouseButtonUp(object sender, MouseEventArgs e)
+        {
+            foreach(var button in buttons)
+            {
+                if(button.Box.Contains(e.Position))
+                {
+                    if(e.Button == MouseButton.LeftButton)
+                    {
+                        button.OnClick();
+                    }
+                }
+            }
+        }
+
         protected override void LoadContent()
         {
             base.LoadContent();
 
             spriteBatch = new SpriteBatch(this.Game.GraphicsDevice);
-            //debugTexture = new Texture2D(Game.GraphicsDevice, 1, 1);
-            //debugTexture.SetData<Color>(new Color[] { Color.White });
-
             debugTexture = Debug.CreateDebugTexture(graphics: GraphicsDevice, color: Color.White);
         }
 
@@ -51,11 +91,6 @@ namespace MicroMMO
                         button.MouseOver = true;
                         button.OnMouseEnter();
                     }
-
-                    if(mouse.LeftButton == ButtonState.Pressed)
-                    {
-                        button.LeftMouseDown = true;
-                    }
                 }
                 else
                 {
@@ -65,38 +100,12 @@ namespace MicroMMO
                         button.OnMouseExit();
                     }
                 }
-
-                if(mouse.LeftButton == ButtonState.Released && button.LeftMouseDown)
-                {
-                    button.LeftMouseDown = false;
-                    button.OnClick();
-                }
             }
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            MouseState mouse = Mouse.GetState();
-
-            HandleMouseOver(mouse.Position, mouse);
-
-            if(mouse.LeftButton == ButtonState.Pressed)
-            {
-
-            }
-
-            if (mouse.RightButton == ButtonState.Pressed)
-            {
-
-            }
-
-            if (mouse.MiddleButton == ButtonState.Pressed)
-            {
-
-            }
-
         }
 
 

@@ -12,9 +12,7 @@ namespace MicroMMO
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Tilemap Map;
-        //Tilemap map2;
-        GUI gui;
+        GUIManager gui;
         Camera camera;
 
         public Game1()
@@ -31,24 +29,9 @@ namespace MicroMMO
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += Window_ClientSizeChanged;
-            Map = new Tilemap(this);
-            //Components.Add(Map);
-
-            gui = new GUI(this);
-            Components.Add(gui);
-
-            Vector2 mapSize = Map.SizeInPixels.ToVector2();
-
-            //map2 = new Tilemap(this);
-            //map2.CameraOffset += new Vector2(mapSize.X, 0.0f);
-            //Components.Add(map2);
-
-
             camera = new Camera(this);
             Components.Add(camera);
 
@@ -56,11 +39,11 @@ namespace MicroMMO
             Components.Add(inputManager);
 
             TilemapManager mapManager = new TilemapManager(this, camera, inputManager);
-            //mapManager.AddMapChunk(new Point(0, 0), Map);
-            //mapManager.AddMapChunk(new Point(1, 0), map2);
-
             Components.Add(mapManager);
-            mapManager.GenerateMapChunks(40, 40);
+            mapManager.GenerateMapChunks(5, 5);
+
+            gui = new GUIManager(this, inputManager);
+            Components.Add(gui);
 
             Components.Add(new FPS_Counter(this));
 
@@ -77,6 +60,7 @@ namespace MicroMMO
                 graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
                 graphics.ApplyChanges();
             }
+
         }
 
         /// <summary>
@@ -85,11 +69,7 @@ namespace MicroMMO
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            //Map = new Tilemap(TileAtlas);
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>

@@ -30,8 +30,10 @@ namespace MicroMMO
         public event MouseEventHandler MouseMotion;
         public event MouseEventHandler MouseButtonDown;
         public event MouseEventHandler MouseButtonUp;
+        public event MouseEventHandler MouseButtonPressed;
 
         Keys[] lastKeysPressed = new Keys[0];
+
         void RaiseKeyboardEvents()
         {
             KeyboardState keyboard = Keyboard.GetState();
@@ -53,8 +55,6 @@ namespace MicroMMO
             lastKeysPressed = currentKeysPressed;
         }
 
-
-        //ButtonState[] lastMouseButtons = new ButtonState[4]; // MouseButton enum count
         struct MouseButtonStruct : IEnumerable
         {
             public ButtonState LeftMouseButton;
@@ -71,7 +71,6 @@ namespace MicroMMO
                 yield return MiddleMouseButton;
                 yield return XButton1;
                 yield return XButton2;
-                //throw new NotImplementedException();
             }
 
             public object this[int i]
@@ -108,8 +107,55 @@ namespace MicroMMO
                 XButton2 = mouse.XButton2,
                 Position = mouse.Position
             };
-            
-            if(currentMouseButtons.LeftMouseButton != lastMouseButtons.LeftMouseButton)
+
+            // OnMousePressed
+            if (currentMouseButtons.LeftMouseButton == ButtonState.Pressed)
+            {
+                OnMousePressed(new MouseEventArgs()
+                {
+                    Button = MouseButton.LeftButton,
+                    Position = mouse.Position
+                });
+            }
+
+            if (currentMouseButtons.RightMouseButton == ButtonState.Pressed)
+            {
+                OnMousePressed(new MouseEventArgs()
+                {
+                    Button = MouseButton.RightButton,
+                    Position = mouse.Position
+                });
+            }
+
+            if (currentMouseButtons.MiddleMouseButton == ButtonState.Pressed)
+            {
+                OnMousePressed(new MouseEventArgs()
+                {
+                    Button = MouseButton.Middle,
+                    Position = mouse.Position
+                });
+            }
+
+            if (currentMouseButtons.XButton1 == ButtonState.Pressed)
+            {
+                OnMousePressed(new MouseEventArgs()
+                {
+                    Button = MouseButton.X1,
+                    Position = mouse.Position
+                });
+            }
+
+            if (currentMouseButtons.XButton2 == ButtonState.Pressed)
+            {
+                OnMousePressed(new MouseEventArgs()
+                {
+                    Button = MouseButton.X2,
+                    Position = mouse.Position
+                });
+            }
+
+            // OnMouseUp & OnMouseDown
+            if (currentMouseButtons.LeftMouseButton != lastMouseButtons.LeftMouseButton)
             {
                 if (currentMouseButtons.LeftMouseButton == ButtonState.Released)
                 {
@@ -169,20 +215,11 @@ namespace MicroMMO
                 }
             }
 
+            // OnMousePosition
             if(currentMouseButtons.Position != lastMouseButtons.Position)
             {
                 OnMouseMotion(new MouseEventArgs() { Button = MouseButton.None, Position = currentMouseButtons.Position });
             }
-
-            //for(int i = 0; i < 5; i++)
-            //{
-            //    if (currentMouseButtons[i] != lastMouseButtons[i])
-            //    {
-
-            //    }
-            //}
-
-
             lastMouseButtons = currentMouseButtons;
         }
 
@@ -192,7 +229,6 @@ namespace MicroMMO
 
             if (Game.IsActive)
             {
-
                 RaiseKeyboardEvents();
                 RaiseMouseEvents();
             }
@@ -223,5 +259,9 @@ namespace MicroMMO
             MouseMotion?.Invoke(this, e);
         }
 
+        protected virtual void OnMousePressed(MouseEventArgs e)
+        {
+            MouseButtonPressed?.Invoke(this, e);
+        }
     }
 }

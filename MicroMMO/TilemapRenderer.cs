@@ -13,12 +13,37 @@ namespace MicroMMO
     {
         public static void Draw(this SpriteBatch spriteBatch, Tilemap map)
         {
+            //for (int y = 0; y < map.GridHeight; y++)
+            //{
+            //    for (int x = 0; x < map.GridWidth; x++)
+            //    {
+            //        int tileIndex = map.Tiles[(y * map.GridWidth) + x];
+            //        Rectangle dst = new Rectangle(x * map.CellWidth + (int)map.CameraOffset.X, y * map.CellHeight + (int)map.CameraOffset.Y,
+            //            map.CellWidth, map.CellHeight);
+            //        spriteBatch.Draw(map.TileAtlas, dst, map.TileAtlasIndex[tileIndex], Color.White);
+            //    }
+            //}
+        }
+
+        public static void Draw(this SpriteBatch spriteBatch, Tilemap map, Camera cam)
+        {
+            //for (int y = 0; y < map.GridHeight; y++)
+            //{
+            //    for (int x = 0; x < map.GridWidth; x++)
+            //    {
+            //        int tileIndex = map.Tiles[(y * map.GridWidth) + x];
+            //        Rectangle dst = new Rectangle(x * map.CellWidth + (int)map.Bounds.X + (int)cam.Position.X, y * map.CellHeight + (int)map.CameraOffset.Y + (int)cam.Position.Y,
+            //            map.CellWidth, map.CellHeight);
+            //        spriteBatch.Draw(map.TileAtlas, dst, map.TileAtlasIndex[tileIndex], Color.White);
+            //    }
+            //}
+
             for (int y = 0; y < map.GridHeight; y++)
             {
                 for (int x = 0; x < map.GridWidth; x++)
                 {
                     int tileIndex = map.Tiles[(y * map.GridWidth) + x];
-                    Rectangle dst = new Rectangle(x * map.CellWidth + (int)map.CameraOffset.X, y * map.CellHeight + (int)map.CameraOffset.Y,
+                    Rectangle dst = new Rectangle((x * map.CellWidth) + map.Bounds.X + (int)cam.Position.X, (y * map.CellHeight) + map.Bounds.Y + (int)cam.Position.Y,
                         map.CellWidth, map.CellHeight);
                     spriteBatch.Draw(map.TileAtlas, dst, map.TileAtlasIndex[tileIndex], Color.White);
                 }

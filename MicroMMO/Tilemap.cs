@@ -20,8 +20,8 @@ namespace MicroMMO
 
         public int[] Tiles { private set; get; }
 
-        public Vector2 oldCameraOffset = new Vector2(0.0f, 0.0f);
-        public Vector2 CameraOffset = new Vector2(0.0f, 0.0f);
+        //public Vector2 oldCameraOffset = new Vector2(0.0f, 0.0f);
+        //public Vector2 CameraOffset = new Vector2(0.0f, 0.0f);
         bool Scrolling = false;
 
         public Texture2D TileAtlas;
@@ -29,13 +29,15 @@ namespace MicroMMO
         SpriteBatch spriteBatch;
 
         public Rectangle Bounds;
+        public Camera camera;
+
 
         public Tilemap(Game game) : base(game)
         {
-            Point _pointCameraOffset = CameraOffset.ToPoint();
+            //Point _pointCameraOffset = CameraOffset.ToPoint();
 
-            Bounds = new Rectangle(_pointCameraOffset.X, _pointCameraOffset.Y, CellWidth * GridWidth, CellHeight * GridHeight);
-
+            //Bounds = new Rectangle(_pointCameraOffset.X, _pointCameraOffset.Y, CellWidth * GridWidth, CellHeight * GridHeight);
+            Bounds = Rectangle.Empty;
         }
 
         public Point SizeInPixels {
@@ -75,54 +77,54 @@ namespace MicroMMO
                 MouseState mouse = Mouse.GetState();
                 KeyboardState keyb = Keyboard.GetState();
 
-                if (mouse.MiddleButton == ButtonState.Pressed)
-                {
-                    if (Scrolling != true)
-                    {
-                        Scrolling = true;
-                        oldCameraOffset.X = mouse.Position.X - CameraOffset.X;
-                        oldCameraOffset.Y = mouse.Position.Y - CameraOffset.Y;
-                    }
+                //if (mouse.MiddleButton == ButtonState.Pressed)
+                //{
+                //    if (Scrolling != true)
+                //    {
+                //        Scrolling = true;
+                //        oldCameraOffset.X = mouse.Position.X - CameraOffset.X;
+                //        oldCameraOffset.Y = mouse.Position.Y - CameraOffset.Y;
+                //    }
 
-                    CameraOffset.X = mouse.Position.X - oldCameraOffset.X;
-                    CameraOffset.Y = mouse.Position.Y - oldCameraOffset.Y;
-                }
+                //    CameraOffset.X = mouse.Position.X - oldCameraOffset.X;
+                //    CameraOffset.Y = mouse.Position.Y - oldCameraOffset.Y;
+                //}
 
-                if (mouse.MiddleButton == ButtonState.Released)
-                {
-                    Scrolling = false;
-                }
+                //if (mouse.MiddleButton == ButtonState.Released)
+                //{
+                //    Scrolling = false;
+                //}
 
-                if (Scrolling)
-                {
-                    CameraOffset.X = mouse.Position.X - oldCameraOffset.X;
-                    CameraOffset.Y = mouse.Position.Y - oldCameraOffset.Y;
-                }
+                //if (Scrolling)
+                //{
+                //    CameraOffset.X = mouse.Position.X - oldCameraOffset.X;
+                //    CameraOffset.Y = mouse.Position.Y - oldCameraOffset.Y;
+                //}
 
-                if (keyb.IsKeyDown(Keys.R))
-                {
-                    Randomize();
-                }
+                //if (keyb.IsKeyDown(Keys.R))
+                //{
+                //    Randomize();
+                //}
 
-                if (mouse.LeftButton == ButtonState.Pressed)
-                {
-                    if (!LeftMouseDown)
-                    {
-                        int? tile = ScreenToTileIndex(mouse.Position);
-                        if (tile != null)
-                        {
-                            Tiles[(int)tile] = 0;
-                        }
-                        //LeftMouseDown = true;
+                //if (mouse.LeftButton == ButtonState.Pressed)
+                //{
+                //    if (!LeftMouseDown)
+                //    {
+                //        int? tile = ScreenToTileIndex(mouse.Position);
+                //        if (tile != null)
+                //        {
+                //            Tiles[(int)tile] = 0;
+                //        }
+                //        //LeftMouseDown = true;
 
-                        //Console.WriteLine("Point: {0}", ScreenToTileCoordinates(mouse.Position));
+                //        //Console.WriteLine("Point: {0}", ScreenToTileCoordinates(mouse.Position));
 
-                    }
-                }
-                else
-                {
-                    LeftMouseDown = false;
-                }
+                //    }
+                //}
+                //else
+                //{
+                //    LeftMouseDown = false;
+                //}
 
                 if (keyb.IsKeyDown(Keys.D1))
                 {
@@ -135,30 +137,30 @@ namespace MicroMMO
                     int? tile = ScreenToTileIndex(mouse.Position);
                     Point tileCoords = ScreenToTileCoordinates(mouse.Position);
 
-                    if(tile.HasValue)
-                    {
-                        int beginX = tileCoords.X - brushWidth / 2;
-                        int beginY = tileCoords.Y - brushHeight / 2;
+                    //if(tile.HasValue)
+                    //{
+                    //    int beginX = tileCoords.X - brushWidth / 2;
+                    //    int beginY = tileCoords.Y - brushHeight / 2;
 
-                        int endX = brushWidth / 2 + tileCoords.X;
-                        int endY = brushHeight / 2 + tileCoords.Y;
+                    //    int endX = brushWidth / 2 + tileCoords.X;
+                    //    int endY = brushHeight / 2 + tileCoords.Y;
 
-                        Point brushTileCoords = new Point();
+                    //    Point brushTileCoords = new Point();
 
-                        for(int y = beginY; y < endY; y++)
-                        {
-                            for(int x = beginX; x < endX; x++)
-                            {
-                                brushTileCoords.X = x;
-                                brushTileCoords.Y = y;
+                    //    for(int y = beginY; y < endY; y++)
+                    //    {
+                    //        for(int x = beginX; x < endX; x++)
+                    //        {
+                    //            brushTileCoords.X = x;
+                    //            brushTileCoords.Y = y;
 
-                                if(x < GridWidth && y < GridHeight && x >= 0 && y >= 0)
-                                {
-                                    Tiles[(int)TileCoordinatesToTileIndex(brushTileCoords)] = newTile;
-                                }
-                            }
-                        }
-                    }
+                    //            if(x < GridWidth && y < GridHeight && x >= 0 && y >= 0)
+                    //            {
+                    //                Tiles[(int)TileCoordinatesToTileIndex(brushTileCoords)] = newTile;
+                    //            }
+                    //        }
+                    //    }
+                    //}
                     //if (tile != null && tile > GridWidth && tile < Tiles.Length - GridWidth - 1)
                     //{
                     //    Tiles[(int)tile - 1] = newTile;
@@ -176,8 +178,14 @@ namespace MicroMMO
 
                 }
 
-                Bounds.X = (int) CameraOffset.X;
-                Bounds.Y = (int) CameraOffset.Y;
+                //Bounds.X = (int) CameraOffset.X;
+                //Bounds.Y = (int) CameraOffset.Y;
+
+                //Bounds.X = (int)camera.Position.X + (int)CameraOffset.X;
+                //Bounds.Y = (int)camera.Position.Y + (int)CameraOffset.Y;
+
+                //Bounds.X = (int)camera.Position.X;
+                //Bounds.Y = (int)camera.Position.Y;
             }
         }
 
@@ -234,12 +242,11 @@ namespace MicroMMO
             }
         }
 
-        Point ScreenToTileCoordinates(Point screenCoordinates)
+        public Point ScreenToTileCoordinates(Point screenCoordinates)
         {
             Point result = new Point();
 
-            result.X = screenCoordinates.X - (int)CameraOffset.X;
-            result.Y = screenCoordinates.Y - (int)CameraOffset.Y;
+            result = screenCoordinates - camera.Position.ToPoint();
 
             Point sizeOfMap = new Point(CellWidth * GridWidth, CellHeight * GridHeight);
 
@@ -254,6 +261,60 @@ namespace MicroMMO
             return result;
         }
 
+        public Point ScreenToTileCoordinates(Point screenCoordinates, Camera cam)
+        {
+            Point result = new Point();
+
+            result.X = screenCoordinates.X + (int)cam.Bounds.X - Bounds.X;
+            result.Y = screenCoordinates.Y + (int)cam.Bounds.Y - Bounds.Y;
+
+            //result = screenCoordinates - cam.Position.ToPoint();
+
+            Point sizeOfMap = new Point(CellWidth * GridWidth, CellHeight * GridHeight);
+
+            if (result.X < 0 || result.Y < 0 || result.X > sizeOfMap.X || result.Y > sizeOfMap.Y)
+            {
+                return new Point(-1, -1);
+            }
+
+            result.X = result.X / CellWidth;
+            result.Y = result.Y / CellHeight;
+
+            return result;
+        }
+
+        //Point ScreenToTileCoordinates(Point screenCoordinates)
+        //{
+        //    Point result = new Point();
+
+        //    result.X = screenCoordinates.X - (int)CameraOffset.X;
+        //    result.Y = screenCoordinates.Y - (int)CameraOffset.Y;
+
+        //    Point sizeOfMap = new Point(CellWidth * GridWidth, CellHeight * GridHeight);
+
+        //    if (result.X < 0 || result.Y < 0 || result.X > sizeOfMap.X || result.Y > sizeOfMap.Y)
+        //    {
+        //        return new Point(-1, -1);
+        //    }
+
+        //    result.X = result.X / CellWidth;
+        //    result.Y = result.Y / CellHeight;
+
+        //    return result;
+        //}
+        public int? ScreenToTileIndex(Point screenCoordinates, Camera cam)
+        {
+            Point tileCoords = ScreenToTileCoordinates(screenCoordinates, cam);
+
+            if (tileCoords.X >= 0 && tileCoords.Y >= 0 && tileCoords.X < GridWidth && tileCoords.Y < GridHeight)
+            {
+                return tileCoords.Y * GridWidth + tileCoords.X;
+            }
+            else
+            {
+                return null;
+            }
+        }
         int? ScreenToTileIndex(Point screenCoordinates)
         {
             Point tileCoords = ScreenToTileCoordinates(screenCoordinates);
@@ -268,7 +329,7 @@ namespace MicroMMO
             }
         }
 
-        int? TileCoordinatesToTileIndex(Point tileCoords)
+        public int? TileCoordinatesToTileIndex(Point tileCoords)
         {
             if (tileCoords.X >= 0 && tileCoords.Y >= 0 && tileCoords.X < GridWidth && tileCoords.Y < GridHeight)
             {

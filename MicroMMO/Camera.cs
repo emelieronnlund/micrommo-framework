@@ -60,8 +60,8 @@ namespace MicroMMO
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            _Bounds.X = (int)Position.X;
-            _Bounds.Y = (int)Position.Y;
+            _Bounds.X = (int)-Position.X;
+            _Bounds.Y = (int)-Position.Y;
             _Bounds.Width = Game.Window.ClientBounds.Width;
             _Bounds.Height = Game.Window.ClientBounds.Height;
 

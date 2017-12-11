@@ -31,6 +31,10 @@ namespace MicroMMO
         public Rectangle Bounds;
         public Camera camera;
 
+        public Tilemap ChunkNeighbourEast;
+        public Tilemap ChunkNeighbourWest;
+        public Tilemap ChunkNeighbourNorth;
+        public Tilemap ChunkNeighbourSouth;
 
         public Tilemap(Game game) : base(game)
         {

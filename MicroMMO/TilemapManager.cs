@@ -32,6 +32,48 @@ namespace MicroMMO
 
         public Point ChunkGridSize = Point.Zero;
         List<Tilemap> allMaps; // including those without uninitialized tile data.
+
+        private void SetChunkNeighbours()
+        {
+            for(int i = 0; i < allMaps.Count; i++)
+            {
+                if(i % ChunkGridSize.X == 0)
+                {
+                    allMaps[i].ChunkNeighbourWest = null;
+                }
+                else
+                {
+                    allMaps[i].ChunkNeighbourWest = allMaps[i-1];
+                }
+
+                if(i < ChunkGridSize.X)
+                {
+                    allMaps[i].ChunkNeighbourNorth = null;
+                }
+                else
+                {
+                    allMaps[i].ChunkNeighbourNorth = allMaps[i-ChunkGridSize.X];
+                }
+
+                if(i >= ChunkGridSize.X * (ChunkGridSize.Y-1))
+                {
+                    allMaps[i].ChunkNeighbourSouth = null;
+                }
+                else
+                {
+                    allMaps[i].ChunkNeighbourSouth = allMaps[i + ChunkGridSize.X];
+                }
+
+                if((i+1) % ChunkGridSize.X == 0)
+                {
+                    allMaps[i].ChunkNeighbourEast = null;
+                }
+                else
+                {
+                    allMaps[i].ChunkNeighbourEast = allMaps[i + 1];
+                }
+            }
+        }
         public void GenerateMapChunks(int countX, int countY)
         {
             Random rng = new Random();
@@ -47,6 +89,8 @@ namespace MicroMMO
 
             ChunkGridSize.X = countX;
             ChunkGridSize.Y = countY;
+
+            SetChunkNeighbours();
         }
 
         public void AddMapChunk(Point chunkCoords, Tilemap map)

@@ -8,10 +8,16 @@ using Microsoft.Xna.Framework;
 
 namespace MicroMMO
 {
-    class TileRef
+    public struct TileRef
     {
-        Tilemap Chunk;
-        Point ChunkCoordinates;
-        Point TileCoordinates;
+        public Tilemap Chunk;
+        public Point ChunkCoordinates;
+        public Point TileCoordinates;
+
+        public override string ToString()
+        {
+            return String.Format("TileRef {{ Chunk: {0} ChunkCoordinates: {1} TileCoordinates: {2} }}",
+                Chunk, ChunkCoordinates, TileCoordinates);
+        }
     }
 }

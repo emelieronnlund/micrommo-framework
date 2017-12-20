@@ -1,4 +1,8 @@
-﻿using System;
+﻿//#define DEBUG_DRAW_TILEMAP
+
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,8 +19,8 @@ namespace MicroMMO
         List<Tilemap> LoadedMapChunks;
         Camera camera;
 
-        public int CellWidth { get; } = 16;
-        public int CellHeight { get; } = 16;
+        public int CellWidth { get; } = 32;
+        public int CellHeight { get; } = 32;
 
         public int GridWidth { get; } = 32;
         public int GridHeight { get; } = 32;
@@ -32,6 +36,94 @@ namespace MicroMMO
 
         public Point ChunkGridSize = Point.Zero;
         List<Tilemap> allMaps; // including those without uninitialized tile data.
+
+        public TileRef[] GetTiles(Rectangle screenRectangle)
+        {
+            Tilemap[] tileChunks;
+
+            screenRectangle.X += CellWidth / 2;
+            screenRectangle.Y += CellHeight / 2;
+            //screenRectangle.Width += CellWidth  / 2;
+            //screenRectangle.Height += CellHeight / 2;
+            //screenRectangle.Width += 9;
+            //screenRectangle.Height += 9;
+
+            Point topLeft = new Point(screenRectangle.X, screenRectangle.Y);
+            Point bottomRight = new Point(screenRectangle.Right, screenRectangle.Bottom);
+
+            Tilemap topLeftChunk = ScreenToChunk(topLeft, camera);
+            Tilemap bottomRightChunk = ScreenToChunk(bottomRight, camera);
+
+            int numberOfTiles = (screenRectangle.Width / CellWidth) * (screenRectangle.Height / CellHeight);
+
+            if (topLeftChunk == bottomRightChunk)
+            {
+                tileChunks = new Tilemap[1];
+                tileChunks[0] = topLeftChunk;
+            }
+            else
+            {
+                int numberOfChunks = (screenRectangle.Width / SizeInPixels.X) * (screenRectangle.Height / SizeInPixels.Y);
+                tileChunks = new Tilemap[numberOfChunks];
+
+                Point currentChunk = new Point();
+                int chunk_i = 0;
+                for (int y = topLeft.Y; y < (bottomRight.Y-SizeInPixels.Y); y += SizeInPixels.Y)
+                {
+                    for (int x = topLeft.X; x < (bottomRight.X - SizeInPixels.X); x += SizeInPixels.X, chunk_i++)
+                    {
+                        currentChunk.X = x;
+                        currentChunk.Y = y;
+                        tileChunks[chunk_i] = ScreenToChunk(currentChunk, camera);
+                    }
+                }
+            }
+
+            TileRef[] returnTiles = new TileRef[numberOfTiles];
+
+            int i = 0;
+            Point tileScreenCoords = Point.Zero;
+
+            for(int y = screenRectangle.Y; y < (screenRectangle.Bottom-CellHeight); y += CellHeight)
+            {
+                for(int x = screenRectangle.X; x < (screenRectangle.Right-CellWidth); x += CellWidth, i++)
+                {
+                    //Console.WriteLine("GETTILES x: {0}, y: {1}", x, y);
+                    tileScreenCoords.X = x;
+                    tileScreenCoords.Y = y;
+
+                    TileRef currentTileRef = ScreenToTileRef(tileScreenCoords);
+                    returnTiles[i] = currentTileRef;
+                    //Console.WriteLine(currentTileRef);
+                }
+            }
+            //Console.WriteLine("GETTILES i: " + i);
+            //for(int i = 0; i < numberOfTiles; i++)
+            //{
+            //    //Tilemap chunk = 
+            //    //returnTiles[i] = new TileRef() { Chunk = };
+            //}
+            return returnTiles;
+        }
+
+        public void SetTileGroup(TileRef[] tileRefs, int tileId)
+        {
+            for (int i = 0; i < tileRefs.Length; i++)
+            {
+                //tileRefs[i] = tileId;
+                TileRef t = tileRefs[i];
+
+                if(t.Chunk != null)
+                {
+                    int? index = t.Chunk.TileCoordinatesToTileIndex(t.TileCoordinates);
+
+                    if (index.HasValue)
+                    {
+                        t.Chunk.Tiles[(int)index] = tileId;
+                    }
+                }
+            }
+        }
 
         private void SetChunkNeighbours()
         {
@@ -82,7 +174,7 @@ namespace MicroMMO
             {
                 for(int x = 0; x < countX; x++)
                 {
-                    Tilemap map = new Tilemap(Game);
+                    Tilemap map = new Tilemap(Game, CellWidth, CellHeight, GridWidth, GridHeight, 16, 16);
                     AddMapChunk(new Point(x, y), map);
                 }
             }
@@ -103,6 +195,8 @@ namespace MicroMMO
 
             //map.CameraOffset = pixelOffset.ToVector2();
             map.camera = camera;
+            map.ChunkCoords = chunkCoords;
+
             LoadedMapChunks.Add(map);
         }
 
@@ -135,12 +229,40 @@ namespace MicroMMO
             inputManager.MouseButtonPressed += InputManager_MouseButtonPressed;
         }
 
+        private void InputManager_MouseButtonDown(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("MouseButtonDown {0} at {1}", e.Button.ToString(), e.Position);
+            if (e.Button == MouseButton.Middle)
+            {
+                scrollButtonDown = true;
+            }
+
+
+        }
+
         private void InputManager_MouseButtonPressed(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButton.LeftButton)
             {
                 PlaceTile(2, e.Position);
             }
+
+            if (e.Button == MouseButton.RightButton)
+            {
+                Rectangle select = new Rectangle(e.Position.X, e.Position.Y, 200, 200);
+
+                // center rectangle on mouse position
+                select.X = select.X - select.Width / 2;
+                select.Y = select.Y - select.Height / 2;
+
+                TileRef[] selectedTiles = GetTiles(select);
+                if (selectedTiles != null)
+                {
+
+                    SetTileGroup(selectedTiles, 5);
+                }
+            }
+
         }
 
         private void InputManager_MouseMotion(object sender, MouseEventArgs e)
@@ -164,15 +286,7 @@ namespace MicroMMO
         bool scrollButtonDown = false;
         Point mousePosition = Point.Zero;
 
-        private void InputManager_MouseButtonDown(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("MouseButtonDown {0} at {1}", e.Button.ToString(), e.Position);
-            if (e.Button == MouseButton.Middle)
-            {
-                scrollButtonDown = true;
 
-            }
-        }
 
         private void InputManager_KeyUp(object sender, KeyboardEventArgs e)
         {
@@ -285,6 +399,12 @@ namespace MicroMMO
 
             spriteBatch.End();
 
+#if DEBUG_DRAW_TILEMAP
+            foreach(var map in MapsToDraw)
+            {
+               TilemapRendererExtensions.DebugDrawTilemap(Game.GraphicsDevice, map, camera);
+            }
+#endif
             MapsToDraw.Clear();
         }
 
@@ -325,16 +445,52 @@ namespace MicroMMO
                         //Console.WriteLine("tileindex : " + (int)map.TileCoordinatesToTileIndex(brushTileCoords));
                         map.Tiles[(int)map.TileCoordinatesToTileIndex(brushTileCoords)] = tile;
                     }
+                    else
+                    {
+                        Tilemap neighbour;
+
+                        if(x > map.GridWidth)
+                        {
+                            if(y > map.GridHeight)
+                            {
+                                //neighbour = map.ChunkNeighbourSouthEast;
+                            }
+                            else if(y < 0)
+                            {
+                                //neighbour = map.ChunkNeighbourNorthEast;
+                            }
+                            else
+                            {
+                                neighbour = map.ChunkNeighbourEast;
+                            }
+                        }
+                        else if(x < 0)
+                        {
+
+                        }
+                    }
                 }
             }
         }
 
         TileRef ScreenToTileRef(Point screenPosition)
         {
-            
+            TileRef tile = new TileRef();
 
-
-            throw new NotImplementedException();
+            Tilemap chunk = ScreenToChunk(screenPosition, camera);
+            if(chunk != null)
+            {
+                Point tileCoords = chunk.ScreenToTileCoordinates(screenPosition, camera);
+                Point chunkCoords = chunk.ChunkCoords;
+                tile.Chunk = chunk;
+                tile.ChunkCoordinates = chunkCoords;
+                tile.TileCoordinates = tileCoords;
+            }
+            else
+            {
+                tile.Chunk = null;
+            }
+            return tile;
         }
 
         int ScreenToChunkIndex(Point screenPosition, Camera _cam)
@@ -360,8 +516,8 @@ namespace MicroMMO
             int chunkIndex = ScreenToChunkIndex(screenPosition, _cam);
             if (chunkIndex != -1)
             {
-                Console.WriteLine(chunkIndex);
-                Console.WriteLine(allMaps[chunkIndex].Bounds);
+                //Console.WriteLine(chunkIndex);
+                //Console.WriteLine(allMaps[chunkIndex].Bounds);
                 return allMaps[chunkIndex];
             }
             else return null;

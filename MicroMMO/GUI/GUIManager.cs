@@ -20,6 +20,8 @@ namespace MicroMMO
         {
             buttons = new List<Button>();
             input = inputManager;
+            debugRect.Width = 200;
+            debugRect.Height = 200;
         }
 
         public override void Initialize()
@@ -32,10 +34,17 @@ namespace MicroMMO
                 Box = new Rectangle(50,50,200,200)
             };
             buttons.Add(hButton);
+
         }
 
+        private Point mousePosition = Point.Zero;
+        private Rectangle debugRect = new Rectangle();
         private void Input_MouseMotion(object sender, MouseEventArgs e)
         {
+            mousePosition = e.Position;
+            debugRect.X = e.Position.X - debugRect.Width / 2;
+            debugRect.Y = e.Position.Y - debugRect.Height / 2;
+
             foreach(var button in buttons)
             {
                 if(button.Box.Contains(e.Position))
@@ -108,7 +117,7 @@ namespace MicroMMO
             base.Update(gameTime);
         }
 
-
+        Color debugRectColor = new Color(Color.Blue, 35);
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
@@ -120,6 +129,7 @@ namespace MicroMMO
                 spriteBatch.Draw(debugTexture, button.Box, Color.Red);
             }
 
+            spriteBatch.Draw(debugTexture, debugRect, debugRectColor);
             spriteBatch.End();
         }
     }

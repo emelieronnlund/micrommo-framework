@@ -10,13 +10,16 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MicroMMO
 {
-    class Tilemap : DrawableGameComponent
+    public class Tilemap : DrawableGameComponent
     {
-        public int CellWidth { get; } = 16;
-        public int CellHeight { get; } = 16;
+        public int CellWidth;
+        public int CellHeight;
 
-        public int GridWidth { get; } = 32;
-        public int GridHeight { get; } = 32;
+        public int GridWidth;
+        public int GridHeight;
+
+        public int SrcCellWidth;
+        public int SrcCellHeight;
 
         public int[] Tiles { private set; get; }
 
@@ -36,11 +39,19 @@ namespace MicroMMO
         public Tilemap ChunkNeighbourNorth;
         public Tilemap ChunkNeighbourSouth;
 
-        public Tilemap(Game game) : base(game)
+        public Point ChunkCoords { get; set; }
+        public Tilemap(Game game, int cellWidth, int cellHeight, int gridWidth, int gridHeight, int srcCellWidth, int srcCellHeight) : base(game)
         {
             //Point _pointCameraOffset = CameraOffset.ToPoint();
 
             //Bounds = new Rectangle(_pointCameraOffset.X, _pointCameraOffset.Y, CellWidth * GridWidth, CellHeight * GridHeight);
+            CellWidth = cellWidth;
+            CellHeight = cellHeight;
+            GridWidth = gridWidth;
+            GridHeight = gridHeight;
+
+            SrcCellWidth = srcCellWidth;
+            SrcCellHeight = srcCellHeight;
             Bounds = Rectangle.Empty;
         }
 
@@ -226,10 +237,10 @@ namespace MicroMMO
             {
                 for (int x = 0; x < atlasWidth; x++)
                 {
-                    Rectangle tileRect = new Rectangle(x * CellWidth,
-                        y * CellHeight,
-                        CellWidth,
-                        CellHeight);
+                    Rectangle tileRect = new Rectangle(x * SrcCellWidth,
+                        y * SrcCellHeight,
+                        SrcCellWidth,
+                        SrcCellHeight);
                     index.Add(tileRect);
                 }
             }

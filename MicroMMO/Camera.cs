@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MicroMMO
 {
-    class Camera : GameComponent
+    public class Camera : GameComponent
     {
         public Rectangle Bounds
         {

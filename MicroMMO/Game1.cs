@@ -21,6 +21,7 @@ namespace MicroMMO
             Content.RootDirectory = "Content";
         }
 
+        TilemapManager mapManager;
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -38,7 +39,7 @@ namespace MicroMMO
             InputManager inputManager = new InputManager(this);
             Components.Add(inputManager);
 
-            TilemapManager mapManager = new TilemapManager(this, camera, inputManager);
+            mapManager = new TilemapManager(this, camera, inputManager);
             Components.Add(mapManager);
             mapManager.GenerateMapChunks(5, 5);
 
@@ -69,7 +70,10 @@ namespace MicroMMO
         /// </summary>
         protected override void LoadContent()
         {
+            //mapManager.GenerateMapChunks(5, 5);
+            base.LoadContent();
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
         }
 
         /// <summary>

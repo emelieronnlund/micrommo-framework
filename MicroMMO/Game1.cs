@@ -19,6 +19,7 @@ namespace MicroMMO
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            //this.Window.Handle;
         }
 
         TilemapManager mapManager;
@@ -39,12 +40,19 @@ namespace MicroMMO
             InputManager inputManager = new InputManager(this);
             Components.Add(inputManager);
 
+            TilemapRendererDimetric dimetric = new TilemapRendererDimetric(this);
+            Components.Add(dimetric);
+
             mapManager = new TilemapManager(this, camera, inputManager);
             Components.Add(mapManager);
             mapManager.GenerateMapChunks(5, 5);
 
             gui = new GUIManager(this, inputManager);
             Components.Add(gui);
+
+            DeveloperConsole devcon = new DeveloperConsole(this, inputManager);
+
+            Components.Add(devcon);
 
             Components.Add(new FPS_Counter(this));
 
@@ -107,8 +115,6 @@ namespace MicroMMO
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.DimGray);
-
-            // TODO: Add your drawing code here
 
             base.Draw(gameTime);
         }

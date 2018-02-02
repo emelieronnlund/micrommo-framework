@@ -23,7 +23,7 @@ namespace MicroMMO
 
         public delegate void KeyboardEventHandler(object sender, KeyboardEventArgs e);
         public delegate void MouseEventHandler(object sender, MouseEventArgs e);
-
+        //public delegate void TextEventHandler(object sender, TextInputEventArgs)
         public event KeyboardEventHandler KeyDown;
         public event KeyboardEventHandler KeyUp;
 
@@ -231,6 +231,7 @@ namespace MicroMMO
             {
                 RaiseKeyboardEvents();
                 RaiseMouseEvents();
+
             }
         }
 
@@ -262,6 +263,25 @@ namespace MicroMMO
         protected virtual void OnMousePressed(MouseEventArgs e)
         {
             MouseButtonPressed?.Invoke(this, e);
+        }
+
+
+        private void RaiseTextInputEvents()
+        {
+
+        }
+            
+        private bool letsCollectText = false;
+        protected bool IsReceivingTextInput
+        {
+            get
+            {
+                return letsCollectText;
+            }
+            set
+            {
+                letsCollectText = value;
+            }
         }
     }
 }

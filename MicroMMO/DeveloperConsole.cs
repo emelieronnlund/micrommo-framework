@@ -24,7 +24,10 @@ namespace MicroMMO
         private Vector2 lineSpacing = new Vector2(0, 20);
         private bool consoleEnabled = false;
 
-        public DeveloperConsole(Game game, InputManager input, Texture2D backgroundTexture = null) : base(game)
+        private Rectangle inputLineRect;
+        private Texture2D _inputLineTexture;
+
+        public DeveloperConsole(Game game, InputManager input, Texture2D backgroundTexture = null, Texture2D inputLineTexture = null) : base(game)
         {
             if(backgroundTexture == null)
             {
@@ -32,9 +35,20 @@ namespace MicroMMO
             }
 
             _backgroundTexture = backgroundTexture;
+
+            if (inputLineTexture == null)
+            {
+                _inputLineTexture = Debug.CreateDebugTexture(this.GraphicsDevice, Color.Red);
+            }
+            else
+            {
+                _inputLineTexture = inputLineTexture;
+            }
+
             _textColour = Color.Black;
             spriteBatch = new SpriteBatch(this.GraphicsDevice);
-            srcConsoleRect = new Rectangle(0, 0, this.Game.Window.ClientBounds.Width, this.Game.Window.ClientBounds.Height / 2);
+
+            ResetConsoleWindow();
 
             input.KeyUp += Input_KeyUp;
 
@@ -48,14 +62,26 @@ namespace MicroMMO
                 consoleEnabled = !consoleEnabled;
             }
 
-            if(e.Key == Keys.G)
-            {
-                AddCommand("echo", Echo);
-            }
-
             if(e.Key == Keys.R)
             {
                 ProcessCommand("echo");
+            }
+
+            if(e.Key == Keys.Enter)
+            {
+                if (!string.IsNullOrEmpty(inputLine))
+                {
+                    ProcessCommand(inputLine);
+                    inputLine = "";
+                }
+            }
+
+            if (e.Key == Keys.Back)
+            {
+                if(inputLine.Length > 0)
+                {
+                    inputLine = inputLine.Remove(inputLine.Length - 1);
+                }
             }
         }
 
@@ -67,14 +93,15 @@ namespace MicroMMO
         }
 
         private Vector2 lineCursor = new Vector2();
+        private Vector2 inputLineTextEntryPosition = new Vector2();
+
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
 
             if (consoleEnabled)
             {
-
-                spriteBatch.Begin();
+                spriteBatch.Begin(blendState: BlendState.AlphaBlend);
 
                 spriteBatch.Draw(_backgroundTexture, srcConsoleRect, Color.White);
 
@@ -86,6 +113,12 @@ namespace MicroMMO
                     spriteBatch.DrawString(_font, lineBuffer[lineBuffer.Count - (i + 1)], lineCursor, _textColour);
                 }
 
+                spriteBatch.Draw(_inputLineTexture, inputLineRect, Color.White);
+                if (!string.IsNullOrEmpty(inputLine))
+                {
+                    spriteBatch.DrawString(_font, inputLine, inputLineTextEntryPosition, Color.White);
+                }
+
                 spriteBatch.End();
             }
         }
@@ -93,8 +126,13 @@ namespace MicroMMO
         public void ProcessCommand(string command)
         {
             string[] tokens = command.Split(' ');
+            
             Delegate method = (Delegate) commands[tokens[0]];
-            method.DynamicInvoke();
+            if (method != null)
+            {
+                method.DynamicInvoke();
+            }
+            else PushLine(string.Format("No such command: {0}", tokens[0]));
         }
 
         public override void Initialize()
@@ -102,12 +140,45 @@ namespace MicroMMO
             base.Initialize();
 
             this.Game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            this.Game.Window.TextInput += Window_TextInput;
+            LoadCommands();
+
+        }
+
+        private string inputLine = "";
+        private void Window_TextInput(object sender, TextInputEventArgs e)
+        {
+
+
+            if (char.IsLetterOrDigit(e.Character) || e.Character == ' ')
+            {
+                inputLine += e.Character;
+                //PushLine(inputLine);
+            }
+        }
+
+        private void ResetConsoleWindow()
+        {
+            int width = this.Game.Window.ClientBounds.Width;
+            int height = this.Game.Window.ClientBounds.Height / 3;
+
+            int inputLineHeight = 20;
+
+            srcConsoleRect = new Rectangle(0, 0, width, height);
+
+            inputLineRect.X = 0;
+            inputLineRect.Y = height;
+            inputLineRect.Width = width;
+            inputLineRect.Height = inputLineHeight;
+
+            inputLineTextEntryPosition.X = inputLineRect.X;
+            inputLineTextEntryPosition.Y = inputLineRect.Y;
         }
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            srcConsoleRect = new Rectangle(0, 0, this.Game.Window.ClientBounds.Width, this.Game.Window.ClientBounds.Height / 2);
-            PushLine(string.Format("Changed resolution to {0} x {1}",
+            ResetConsoleWindow();
+            PushLine(string.Format("Resolution set to {0}x{1}",
                 Game.Window.ClientBounds.Width,
                 Game.Window.ClientBounds.Height));
         }
@@ -126,13 +197,17 @@ namespace MicroMMO
 
         public void AddCommand(string invocation, CommandCallback callback)
         {
-
             commands.Add(invocation, callback);
         }
 
         public void PushLine(string line)
         {
             lineBuffer.Add(line);
+        }
+
+        void LoadCommands()
+        {
+            AddCommand("echo", Echo);
         }
     }
 }
